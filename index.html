@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Выбор питомца</title>
-    <!-- Подключаем скрипт Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Базовые стили с использованием цветов темы Telegram */
         body {
             margin: 0;
             padding: 0;
@@ -50,7 +48,6 @@
             color: var(--tg-theme-hint-color, #888);
         }
 
-        /* Сетка для яиц 2x2 */
         .eggs-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -107,28 +104,24 @@
     <div class="title">Выбери магическое яйцо, чтобы начать приключение!</div>
 
     <div class="eggs-grid">
-        <!-- Дракон -->
         <div class="egg-card" onclick="selectPet('dragon')">
             <span class="egg-emoji">🔥🥚</span>
             <div class="egg-name">Дракон</div>
             <div class="egg-desc">Стихия Огня</div>
         </div>
 
-        <!-- Рысь -->
         <div class="egg-card" onclick="selectPet('lynx')">
             <span class="egg-emoji">❄️🥚</span>
             <div class="egg-name">Рысь</div>
             <div class="egg-desc">Стихия Льда</div>
         </div>
 
-        <!-- Волк -->
         <div class="egg-card" onclick="selectPet('wolf')">
             <span class="egg-emoji">⚡🥚</span>
             <div class="egg-name">Волк</div>
             <div class="egg-desc">Стихия Молнии</div>
         </div>
 
-        <!-- Лис -->
         <div class="egg-card" onclick="selectPet('fox')">
             <span class="egg-emoji">🌿🥚</span>
             <div class="egg-name">Лис</div>
@@ -137,23 +130,25 @@
     </div>
 
     <script>
-        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
-        
-        // Сообщаем Telegram, что приложение готово, и разворачиваем на весь экран
         tg.ready();
-        tg.expand(); 
+        tg.expand();
 
-        // Получаем имя пользователя для персонализации (опционально)
         const user = tg.initDataUnsafe?.user;
         if (user) {
             document.querySelector('.title').innerText = `${user.first_name}, выбери магическое яйцо!`;
         }
 
-        // Функция выбора питомца
         function selectPet(petType) {
-            // Вибрация при нажатии (работает на телефонах)
-            tg.HapticFeedback.impactOccurred('medium');
+            // ОТЛАДКА: Показываем alert, чтобы убедиться, что клик работает
+            alert(`Ты выбрал: ${petType}! Отправляем данные боту...`);
+
+            // Вибрация при нажатии
+            try {
+                tg.HapticFeedback.impactOccurred('medium');
+            } catch(e) {
+                console.log('Haptic feedback not supported');
+            }
 
             // Формируем данные для отправки боту
             const data = {
@@ -161,12 +156,18 @@
                 pet_type: petType
             };
 
+            console.log('Отправляем данные:', data);
+
             // Отправляем данные обратно в бота
             tg.sendData(JSON.stringify(data));
+
+            // Закрываем Web App после отправки
+            setTimeout(() => {
+                tg.close();
+            }, 500);
         }
 
-        // TODO: В будущем здесь будет запрос к боту для получения актуального количества печенек
-        document.getElementById('cookies').innerText = "150"; // Заглушка для теста
+        document.getElementById('cookies').innerText = "150";
     </script>
 </body>
 </html>
